@@ -1,0 +1,46 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.card {
+    width: 35em;
+    height: 12em;
+    box-shadow: 5px 5px 13px 1px rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    background: linear-gradient(to bottom right, rgba(89, 179, 231, 0.705), #e5e5e5);
+}
+
+.ratings {
+    flex-direction: column;
+    flex-wrap: wrap;
+    position: absolute;
+    top: .7em;
+    right: 1.5em;
+}
+
+.ratings h4 {
+    width: 2em;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.rating-text {
+    text-align: center;
+    line-height: 2px;
+    font-size: 12px;
+}
+
+.no-data-found {
+    position: absolute;
+    width: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
