@@ -8,61 +8,83 @@ class RestaurantHeaders extends Component {
     super(props);
     this.state = {
       restaurantData: RestaurantData,
-      searchInput: '',
-      sortingInput: '',
-      filteringInput: '',
+      filteredData: [],
+      searchInput: "",
+      sortingInput: "rating",
+      filteringInput: "",
     };
     this.setSortingInput = this.setSortingInput.bind(this);
     this.setSearchingInput = this.setSearchingInput.bind(this);
     this.setFilteringInput = this.setFilteringInput.bind(this);
   }
 
-  filteredData = [];
+  componentDidMount() {
+    this.filterData();
+  }
 
   setSortingInput = (event) => {
     let value = event.target.value;
-    this.setState({
-      sortingInput: value
-    });
-    this.filterData();
+    this.setState(
+      {
+        sortingInput: value,
+      },
+      () => {
+        this.filterData();
+      }
+    );
   };
   setSearchingInput = (event) => {
     let value = event.target.value;
-    this.setState({
-      searchInput: value
-    });
-    this.filterData();
+    this.setState(
+      {
+        searchInput: value,
+      },
+      () => {
+        this.filterData();
+      }
+    );
   };
   setFilteringInput = (event) => {
     let value = event.target.value;
-    this.setState({
-      filteringInput: value
-    });
-    this.filterData();
- 
+    this.setState(
+      {
+        filteringInput: value,
+      },
+      () => {
+        this.filterData();
+      }
+    );
   };
 
   sortData() {
     const stateObj = this.state;
+    let sortedData = [];
     if (stateObj.sortingInput === "rating") {
-      this.filteredData.sort((a, b) => {
-        return (a.aggregateRating - b.aggregateRating);
+      sortedData = stateObj.filteredData.sort((a, b) => {
+        return b.aggregateRating - a.aggregateRating;
       });
     } else if (stateObj.sortingInput === "votes") {
-      this.filteredData.sort((a, b) => {
-        return (a.votes - b.votes);
+      sortedData = stateObj.filteredData.sort((a, b) => {
+        return b.votes - a.votes;
       });
     } else if (stateObj.sortingInput === "cost") {
-      this.filteredData.sort((a, b) => {
-        return (a.averageCostForTwo - b.averageCostForTwo);
+      sortedData = stateObj.filteredData.sort((a, b) => {
+        return a.averageCostForTwo - b.averageCostForTwo;
       });
     }
+    this.setState({
+      filteredData: sortedData,
+    });
   }
 
   filterData() {
     const stateObj = this.state;
+    let filteredData = [];
+    console.log(stateObj.filteringInput);
+    console.log(stateObj.searchInput);
+    console.log(stateObj.sortingInput);
     if (stateObj.filteringInput && stateObj.searchInput) {
-      this.filteredData = stateObj.restaurantData.filter((data) => {
+      filteredData = stateObj.restaurantData.filter((data) => {
         return (
           data.restaurantName
             .toLowerCase()
@@ -72,22 +94,29 @@ class RestaurantHeaders extends Component {
             .includes(stateObj.filteringInput.toLowerCase())
         );
       });
-    } else if (stateObj.filteringInput) {
-      this.filteredData = stateObj.restaurantData.filter((data) => {
+    }
+    else if (stateObj.filteringInput) {
+      filteredData = stateObj.restaurantData.filter((data) => {
         return data.cuisines
           .toLowerCase()
           .includes(stateObj.filteringInput.toLowerCase());
       });
-    } else if (stateObj.searchInput) {
-      this.filteredData = stateObj.restaurantData.filter((data) => {
-        return data.cuisines
+    }
+    else if (stateObj.searchInput) {
+      filteredData = stateObj.restaurantData.filter((data) => {
+        return data.restaurantName
           .toLowerCase()
           .includes(stateObj.searchInput.toLowerCase());
       });
     } else {
-      this.filteredData = stateObj.restaurantData;
+      filteredData = stateObj.restaurantData;
     }
-    this.sortData();
+    this.setState(
+      {
+        filteredData: filteredData,
+      },
+      () => this.sortData()
+    );
   }
 
   render() {
@@ -95,7 +124,7 @@ class RestaurantHeaders extends Component {
     if (this.state.restaurantData) {
       this.state.restaurantData.forEach((item) => {
         item.cuisines.split(",").map((item) => {
-          if (cuisines.indexOf(item.trim()) === -1) {
+          if (cuisines.indexOf(item.trim()) === -1 && item) {
             cuisines.push(item.trim());
           }
         });
@@ -116,9 +145,15 @@ class RestaurantHeaders extends Component {
               id="sortBy"
               onChange={this.setSortingInput}
             >
-              <option value="rating" key='rating'>Rating</option>
-              <option value="votes" key='votes'>Votes</option>
-              <option value="cost" key='cost'>Cost of Two</option>
+              <option value="rating" key="rating">
+                Rating
+              </option>
+              <option value="votes" key="votes">
+                Votes
+              </option>
+              <option value="cost" key="cost">
+                Cost of Two
+              </option>
             </select>
           </div>
 
@@ -152,7 +187,7 @@ class RestaurantHeaders extends Component {
           </div>
         </nav>
 
-        <RestaurantList RestaurantData={this.filteredData} />
+        <RestaurantList RestaurantData={this.state.filteredData} />
       </React.Fragment>
     );
   }
